@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="MyBudget"/>
+<meta name="theme-color" content="#0f0f14"/>
+<title>MyBudget</title>
+<style>
+:root{--bg:#0f0f14;--bg2:#17171f;--bg3:#1e1e2a;--bg4:#25253a;--accent:#7c6ef7;--green:#34d399;--red:#f87171;--amber:#fbbf24;--text:#f0f0f8;--text2:#9090b0;--text3:#5a5a7a;--border:#2a2a3f;--r:14px;--rs:8px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:430px;margin:0 auto}
+.sp{height:env(safe-area-inset-top,44px);background:var(--bg)}
+#screens{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#screens::-webkit-scrollbar{display:none}
+nav{display:flex;background:var(--bg2);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom,0);padding-top:2px}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 2px 8px;background:none;border:none;color:var(--text3);font-family:inherit;font-size:9px;letter-spacing:.04em;text-transform:uppercase;cursor:pointer}
+nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--accent)}
+.scr{display:none;min-height:100%;padding-bottom:20px}
+.scr.on{display:block}
+.phdr{padding:20px 18px 12px}
+.phdr h1{font-size:23px;font-weight:600;letter-spacing:-.5px}
+.phdr p{font-size:12px;color:var(--text2);margin-top:3px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin:0 14px 10px}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:0 14px 10px}
+.met{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:13px}
+.met .l{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:5px}
+.met .v{font-size:21px;font-weight:600;letter-spacing:-.5px;font-family:'DM Mono',monospace}
+.met .s{font-size:10px;color:var(--text3);margin-top:3px}
+.sb-wrap{margin:0 14px 10px}
+.sb-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:5px}
+.sb-track{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.sb-fill{height:100%;border-radius:3px;background:var(--accent);transition:width .6s}
+.slbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);padding:5px 18px}
+.cr{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid var(--border)}
+.cr:last-child{border-bottom:none}
+.ci{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.cb{flex:1;min-width:0}
+.cn{font-size:13px;font-weight:500}
+.bbg{height:2px;background:var(--bg4);border-radius:1px;margin-top:4px}
+.bf{height:2px;border-radius:1px}
+.cs{font-size:10px;color:var(--text3);margin-top:2px}
+.ca{text-align:right;flex-shrink:0}
+.cav{font-size:13px;font-weight:600;font-family:'DM Mono',monospace}
+.cap{font-size:10px;color:var(--text3)}
+.badge{display:inline-block;font-size:9px;font-weight:500;padding:2px 6px;border-radius:20px}
+.br{background:#f8717122;color:#f87171}
+.bg{background:#34d39922;color:#34d399}
+.bp{background:#7c6ef722;color:#7c6ef7}
+.dw{position:relative;width:118px;height:118px;margin:0 auto 8px}
+.dc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dc .big{font-size:17px;font-weight:600;font-family:'DM Mono',monospace}
+.dc .tiny{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
+.leg{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:8px}
+.li{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2)}
+.ld{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+.tc{border-radius:var(--r);padding:13px;margin:0 14px 9px;border-left:3px solid var(--accent);background:var(--bg2);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.th{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.tt{font-size:12px;color:var(--text2);line-height:1.5}
+.ta{font-size:11px;padding:5px 9px;border-radius:var(--rs);margin-top:7px}
+.ta.bad{background:#f8717115;color:#f87171}
+.ta.ok{background:#34d39915;color:#34d399}
+.gc{margin:10px 14px 8px;padding:13px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r)}
+.gl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:4px}
+.gv{font-size:19px;font-weight:600;font-family:'DM Mono',monospace;margin-bottom:3px}
+.gs{font-size:11px;color:var(--text2)}
+.fw{padding:13px 16px}
+.fl{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px;display:block}
+.fi{width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;font-size:14px;margin-bottom:12px;-webkit-appearance:none;appearance:none}
+.fi:focus{outline:none;border-color:var(--accent)}
+select.fi{cursor:pointer}
+.btnp{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;margin-top:2px}
+.btng{width:100%;padding:11px;background:none;border:1px solid var(--border);border-radius:var(--rs);color:var(--red);font-family:inherit;font-size:13px;cursor:pointer;margin-top:9px}
+.tr{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid var(--border)}
+.tr:last-child{border-bottom:none}
+.ti{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.tn{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tsub{font-size:10px;color:var(--text3);margin-top:2px}
+.ta2{font-size:13px;font-weight:600;font-family:'DM Mono',monospace;color:var(--red)}
+.db{font-size:10px;color:var(--text3);cursor:pointer;margin-top:2px}
+.lr{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.li2{font-size:15px;width:20px;text-align:center}
+.ln{font-size:12px;color:var(--text2);flex:1}
+.linp{width:105px;padding:6px 9px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:'DM Mono',monospace;font-size:12px;margin-bottom:0;-webkit-appearance:none}
+#ob{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center}
+#ob .logo{font-size:54px;margin-bottom:16px}
+#ob h1{font-size:28px;font-weight:600;letter-spacing:-.5px;margin-bottom:8px}
+#ob p{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:28px}
+#ob .btnp{max-width:260px}
+#inst{background:var(--bg3);border:1px solid var(--accent);border-radius:var(--r);margin:8px 14px;padding:11px 13px;font-size:12px;color:var(--text2);line-height:1.55;display:none}
+#inst strong{color:var(--accent)}
+#toast{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 88px);left:50%;transform:translateX(-50%) translateY(16px);background:var(--bg3);border:1px solid var(--border);border-radius:30px;padding:9px 18px;font-size:13px;color:var(--text);opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;z-index:99}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{text-align:center;padding:28px 14px;color:var(--text3);font-size:13px}
+.empty .em{font-size:30px;display:block;margin-bottom:7px}
+</style>
+</head>
+<body>
+<div id="ob">
+  <div class="logo">💰</div>
+  <h1>MyBudget</h1>
+  <p>Your personal finance tracker.<br/>Track every rupee. Save more every month.<br/><br/>Your data stays private on this device only.</p>
+  <button class="btnp" onclick="startApp()">Get started →</button>
+</div>
+<div id="app" style="display:none">
+  <div class="sp"></div>
+  <div id="screens">
+    <div class="scr on" id="scr-home">
+      <div class="phdr"><h1 id="hdr-t">May 2026 💸</h1><p id="hdr-s">Set your income in Settings</p></div>
+      <div id="inst"><strong>📲 Install as app:</strong> Tap the <strong>Share button</strong> in Safari → tap <strong>"Add to Home Screen"</strong> → tap <strong>Add</strong>. Done — works offline!</div>
+      <div class="mg">
+        <div class="met"><div class="l">Income</div><div class="v" id="m-i">₹0</div><div class="s">monthly</div></div>
+        <div class="met"><div class="l">Spent</div><div class="v" id="m-s" style="color:var(--red)">₹0</div><div class="s" id="m-sp">0% used</div></div>
+      </div>
+      <div class="mg">
+        <div class="met"><div class="l">Remaining</div><div class="v" id="m-r" style="color:var(--green)">₹0</div><div class="s">left</div></div>
+        <div class="met"><div class="l">Fixed costs</div><div class="v" id="m-f" style="color:var(--accent)">₹0</div><div class="s">rent+EMI+staff</div></div>
+      </div>
+      <div class="sb-wrap" id="sbw" style="display:none">
+        <div class="sb-lbl"><span>Savings rate</span><span id="sbp">0%</span></div>
+        <div class="sb-track"><div class="sb-fill" id="sbf" style="width:0%"></div></div>
+      </div>
+      <div class="card" style="padding:14px 14px 9px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
+          <span style="font-size:13px;font-weight:500">Spending breakdown</span>
+          <span class="badge bp" id="cc">0 categories</span>
+        </div>
+        <div class="dw"><canvas id="donut" width="118" height="118" role="img" aria-label="Spending by category donut chart"></canvas><div class="dc"><div class="big" id="dcv">₹0</div><div class="tiny">spent</div></div></div>
+        <div class="leg" id="leg"></div>
+      </div>
+      <div class="slbl">By category</div>
+      <div class="card" style="padding:11px 13px 4px" id="catlist"><div class="empty"><span class="em">📊</span>Add expenses to see breakdown</div></div>
+    </div>
+    <div class="scr" id="scr-tips">
+      <div class="phdr"><h1>Smart tips ✨</h1><p>Cut back · save more · grow wealth</p></div>
+      <div id="tipsbody"></div>
+    </div>
+    <div class="scr" id="scr-add">
+      <div class="phdr"><h1>Add expense</h1><p>Log what you spend</p></div>
+      <div class="fw">
+        <label class="fl">Description</label>
+        <input class="fi" type="text" id="a-d" placeholder="e.g. Zepto weekly order" autocomplete="off"/>
+        <label class="fl">Amount (₹)</label>
+        <input class="fi" type="number" id="a-a" placeholder="0" min="1" inputmode="numeric"/>
+        <label class="fl">Category</label>
+        <select class="fi" id="a-c">
+          <optgroup label="Housing &amp; Fixed">
+            <option value="Rent">🏠 Rent</option>
+            <option value="Home Transfer">🏡 Home transfer</option>
+            <option value="EMI">💳 EMI — personal loan</option>
+            <option value="Electricity">⚡ Electricity bill</option>
+          </optgroup>
+          <optgroup label="Household Staff">
+            <option value="Cook">👩‍🍳 Cook salary</option>
+            <option value="Maid">🧹 Maid salary</option>
+          </optgroup>
+          <optgroup label="Food &amp; Groceries">
+            <option value="Groceries">🛒 Groceries (Zepto / Blinkit)</option>
+            <option value="Vegetables">🥦 Vegetables, fruits, eggs</option>
+            <option value="Milk Dairy">🥛 Milk, bread, dairy</option>
+            <option value="Zomato Swiggy">🍱 Zomato / Swiggy</option>
+            <option value="Food Outing">🍽️ Food outing / restaurant</option>
+          </optgroup>
+          <optgroup label="Transport">
+            <option value="Car Petrol">⛽ Car petrol</option>
+          </optgroup>
+          <optgroup label="Investments &amp; Transfers">
+            <option value="Mutual Funds">📈 Mutual funds SIP</option>
+            <option value="Brother Transfer">👨‍👦 Transfer to brother</option>
+          </optgroup>
+          <optgroup label="Lifestyle">
+            <option value="Shopping">🛍️ Shopping</option>
+            <option value="Other">📦 Other</option>
+          </optgroup>
+        </select>
+        <label class="fl">Frequency</label>
+        <select class="fi" id="a-f">
+          <option value="one">One-time</option>
+          <option value="weekly">Weekly recurring (×4 this month)</option>
+          <option value="monthly">Monthly fixed</option>
+        </select>
+        <label class="fl">Date</label>
+        <input class="fi" type="date" id="a-dt"/>
+        <button class="btnp" onclick="addExp()">Add expense</button>
+      </div>
+    </div>
+    <div class="scr" id="scr-log">
+      <div class="phdr"><h1>Expense log</h1><p id="logsub">Nothing yet</p></div>
+      <div class="card" style="padding:11px 13px 4px" id="txnlist"><div class="empty"><span class="em">🧾</span>No expenses yet</div></div>
+    </div>
+    <div class="scr" id="scr-set">
+      <div class="phdr"><h1>Settings ⚙️</h1><p>Income, goals &amp; limits</p></div>
+      <div class="fw">
+        <label class="fl">Monthly take-home income (₹)</label>
+        <input class="fi" type="number" id="s-i" placeholder="e.g. 80000" inputmode="numeric"/>
+        <label class="fl">Savings goal (%)</label>
+        <input class="fi" type="number" id="s-g" placeholder="20" min="0" max="80" inputmode="numeric"/>
+        <label class="fl" style="margin-bottom:9px">Category spending limits (₹/month)</label>
+        <div id="limform"></div>
+        <button class="btnp" onclick="saveSet()">Save settings</button>
+        <button class="btng" onclick="clearAll()">Clear all data</button>
+        <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:16px;line-height:1.6">Data stored privately on this device only.<br/>Share the HTML file with your friend — she installs her own copy with her own private data.</p>
+      </div>
+    </div>
+  </div>
+  <nav id="nav">
+    <button class="on" onclick="go('home',this)"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1z"/><path d="M9 21V12h6v9"/></svg>Home</button>
+    <button onclick="go('tips',this)"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 017 7c0 2.5-1.3 4.7-3.3 6L15 17H9l-.7-2C6.3 13.7 5 11.5 5 9a7 7 0 017-7z"/><path d="M9 21h6m-6-4h6"/></svg>Tips</button>
+    <button onclick="go('add',this)"><div style="width:42px;height:42px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:2px;margin-top:-8px;border:3px solid var(--bg2)"><svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:#fff;stroke-width:2.2;stroke-linecap:round;fill:none"><path d="M12 5v14M5 12h14"/></svg></div>Add</button>
+    <button onclick="go('log',this)"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>Log</button>
+    <button onclick="go('set',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</button>
+  </nav>
+</div>
+<div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const C={
+  Rent:{ic:'🏠',col:'#7c6ef7'},
+  'Home Transfer':{ic:'🏡',col:'#5b4fd4'},
+  EMI:{ic:'💳',col:'#a78bfa'},
+  Electricity:{ic:'⚡',col:'#60a5fa'},
+  Cook:{ic:'👩‍🍳',col:'#34d399'},
+  Maid:{ic:'🧹',col:'#10b981'},
+  Groceries:{ic:'🛒',col:'#4ade80'},
+  Vegetables:{ic:'🥦',col:'#22c55e'},
+  'Milk Dairy':{ic:'🥛',col:'#86efac'},
+  'Zomato Swiggy':{ic:'🍱',col:'#f97316'},
+  'Food Outing':{ic:'🍽️',col:'#fb923c'},
+  'Car Petrol':{ic:'⛽',col:'#fbbf24'},
+  'Mutual Funds':{ic:'📈',col:'#38bdf8'},
+  'Brother Transfer':{ic:'👨‍👦',col:'#818cf8'},
+  Shopping:{ic:'🛍️',col:'#f472b6'},
+  Other:{ic:'📦',col:'#6b7280'}
+};
+const T={
+  Rent:'Rent should be under 30% of income. If crossing that, consider a flatmate when lease renews.',
+  'Home Transfer':'Treat this like EMI — budget on day 1 so it never stresses you.',
+  EMI:'Paying ₹500–₹1,000 extra on EMI each month cuts tenure and saves significant interest.',
+  Electricity:'AC at 24°C instead of 18°C cuts power bill by up to 24%. Unplug devices on standby.',
+  Cook:'Essential fixed cost. Tracking ensures it never goes unnoticed in your monthly budget.',
+  Maid:'Fixed cost — just ensure it\'s always accounted for so it never surprises you.',
+  Groceries:'One big weekly Zepto/Blinkit order saves more than multiple small quick orders — fewer impulse adds.',
+  Vegetables:'Local sabzi mandi is 30–40% cheaper than quick commerce for veggies, fruits and eggs.',
+  'Milk Dairy':'A milk delivery subscription (like MilkBasket) is cheaper and removes impulse add-ons.',
+  'Zomato Swiggy':'Food delivery is often the biggest hidden drain. Cap at 4 orders/week — cook Mon–Thurs.',
+  'Food Outing':'Set a firm monthly restaurant budget. Log every outing here so it stays visible.',
+  'Car Petrol':'WFH 2 extra days/week or carpooling can save ₹1,500–₹3,000 on petrol monthly.',
+  'Mutual Funds':'Set SIP auto-debit on the 1st of month so it runs before any spending happens.',
+  'Brother Transfer':'Fixed commitment — budget it first like a bill, non-negotiable.',
+  Shopping:'Use the 48-hour rule: wait 2 days before any non-essential purchase. Most urges pass.',
+  Other:'Break "Other" into real sub-categories — it\'s where hidden spending loves to hide.'
+};
+const R={Rent:22,'Home Transfer':8,EMI:10,Electricity:3,Cook:4,Maid:2,Groceries:5,Vegetables:3,'Milk Dairy':2,'Zomato Swiggy':4,'Food Outing':4,'Car Petrol':5,'Mutual Funds':15,'Brother Transfer':5,Shopping:5,Other:3};
+
+let exps=[],cfg={inc:0,goal:20,lim:{}},ch=null;
+
+function load(){
+  try{exps=JSON.parse(localStorage.getItem('mb_e')||'[]');}catch(e){exps=[];}
+  try{cfg=JSON.parse(localStorage.getItem('mb_c')||JSON.stringify(cfg));}catch(e){}
+  if(localStorage.getItem('mb_ok')){
+    document.getElementById('ob').style.display='none';
+    document.getElementById('app').style.display='flex';
+  }
+  document.getElementById('a-dt').valueAsDate=new Date();
+  if(cfg.inc) document.getElementById('s-i').value=cfg.inc;
+  if(cfg.goal) document.getElementById('s-g').value=cfg.goal;
+  buildLim();
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone;
+  if(ios) document.getElementById('inst').style.display='block';
+  render();
+}
+
+function startApp(){
+  localStorage.setItem('mb_ok','1');
+  document.getElementById('ob').style.display='none';
+  document.getElementById('app').style.display='flex';
+  go('set',document.querySelectorAll('#nav button')[4]);
+}
+
+function sv(){localStorage.setItem('mb_e',JSON.stringify(exps));localStorage.setItem('mb_c',JSON.stringify(cfg));}
+function f(n){return '₹'+Math.round(n).toLocaleString('en-IN');}
+function tots(){const t={};exps.forEach(e=>{t[e.cat]=(t[e.cat]||0)+e.amt;});return t;}
+
+function render(){
+  const t=tots(),tot=Object.values(t).reduce((a,b)=>a+b,0),inc=cfg.inc||0,rem=inc-tot;
+  const fix=['Rent','Home Transfer','EMI','Cook','Maid'].reduce((a,k)=>a+(t[k]||0),0);
+  const mn=new Date().toLocaleString('en-IN',{month:'long',year:'numeric'});
+  document.getElementById('hdr-t').textContent=mn+' 💸';
+  document.getElementById('hdr-s').textContent=inc>0?(rem>=0?'You have '+f(rem)+' left this month':'Overspent by '+f(-rem)+' ⚠️'):'Set your income in Settings to begin';
+  document.getElementById('m-i').textContent=f(inc);
+  document.getElementById('m-s').textContent=f(tot);
+  document.getElementById('m-r').textContent=f(rem);
+  document.getElementById('m-f').textContent=f(fix);
+  document.getElementById('m-sp').textContent=inc>0?Math.round(tot/inc*100)+'% used':'—';
+  if(inc>0){const sp=Math.min(100,Math.round(Math.max(0,rem)/inc*100));document.getElementById('sbw').style.display='block';document.getElementById('sbf').style.width=sp+'%';document.getElementById('sbp').textContent=sp+'% saved';}
+  renderDnt(t,tot);renderCats(t,tot,inc);renderTips(t,inc);renderLog(tot);
+}
+
+function renderDnt(t,tot){
+  const cats=Object.keys(t);
+  document.getElementById('dcv').textContent=f(tot);
+  document.getElementById('cc').textContent=cats.length+' categor'+(cats.length===1?'y':'ies');
+  if(ch){ch.destroy();ch=null;}
+  const ctx=document.getElementById('donut').getContext('2d');
+  if(!cats.length){ctx.clearRect(0,0,118,118);ctx.beginPath();ctx.arc(59,59,43,0,Math.PI*2);ctx.strokeStyle='#2a2a3f';ctx.lineWidth=13;ctx.stroke();document.getElementById('leg').innerHTML='';return;}
+  ch=new Chart(ctx,{type:'doughnut',data:{labels:cats,datasets:[{data:cats.map(k=>t[k]),backgroundColor:cats.map(k=>(C[k]||C.Other).col),borderWidth:2,borderColor:'#17171f',hoverOffset:3}]},options:{responsive:false,cutout:'70%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+f(c.raw)+' ('+Math.round(c.raw/tot*100)+'%)'}}}}}); 
+  document.getElementById('leg').innerHTML=cats.map(k=>`<div class="li"><div class="ld" style="background:${(C[k]||C.Other).col}"></div><span>${k}</span></div>`).join('');
+}
+
+function renderCats(t,tot,inc){
+  const el=document.getElementById('catlist'),keys=Object.keys(t);
+  if(!keys.length){el.innerHTML='<div class="empty"><span class="em">📊</span>Add expenses to see breakdown</div>';return;}
+  el.innerHTML=keys.sort((a,b)=>t[b]-t[a]).map(k=>{
+    const c=C[k]||C.Other,amt=t[k],lim=cfg.lim[k]||(inc>0&&R[k]?inc*R[k]/100:0),over=lim>0&&amt>lim,bw=tot>0?Math.round(amt/tot*100):0,pct=tot>0?Math.round(amt/tot*100):0;
+    return`<div class="cr"><div class="ci" style="background:${c.col}20">${c.ic}</div><div class="cb"><div class="cn">${k}${over?' <span class="badge br">over</span>':''}</div><div class="bbg"><div class="bf" style="width:${bw}%;background:${c.col}"></div></div>${lim>0?`<div class="cs">Limit ${f(lim)}</div>`:''}</div><div class="ca"><div class="cav">${f(amt)}</div><div class="cap">${pct}%</div></div></div>`;
+  }).join('');
+}
+
+function renderTips(t,inc){
+  const el=document.getElementById('tipsbody'),keys=Object.keys(t);
+  if(!keys.length){el.innerHTML='<div class="empty" style="padding:32px"><span class="em">💡</span>Add expenses first to get personalised tips</div>';return;}
+  const tot=Object.values(t).reduce((a,b)=>a+b,0),goalAmt=inc*(cfg.goal/100),rem=inc-tot,met=rem>=goalAmt;
+  let html=`<div class="gc"><div class="gl">Savings goal — ${cfg.goal}%</div><div class="gv" style="color:${met?'var(--green)':'var(--red)'}">${f(goalAmt)}/month</div><div class="gs">${met?'✅ On track — saving '+f(rem)+' this month':'⚠️ Need to cut ₹'+Math.round(Math.max(0,goalAmt-rem)).toLocaleString('en-IN')+' more'}</div></div>`;
+  keys.sort((a,b)=>t[b]-t[a]).forEach(k=>{
+    const c=C[k]||C.Other,amt=t[k],lim=cfg.lim[k]||(inc>0&&R[k]?inc*R[k]/100:null),over=lim&&amt>lim,pct=inc>0?Math.round(amt/inc*100):0,tip=T[k]||'Track this category regularly to spot patterns.';
+    html+=`<div class="tc"><div class="th"><span style="font-size:17px">${c.ic}</span><span style="font-size:13px;font-weight:500">${k}</span><span class="badge ${over?'br':'bg'}" style="margin-left:auto">${pct}% of income</span></div><div class="tt">${tip}</div><div class="ta ${over?'bad':'ok'}">${over?'₹'+Math.round(amt-lim).toLocaleString('en-IN')+' over recommended limit of '+f(lim):'Within healthy range — keep it up!'}</div></div>`;
+  });
+  el.innerHTML=html;
+}
+
+function renderLog(tot){
+  const el=document.getElementById('txnlist');
+  document.getElementById('logsub').textContent=exps.length?exps.length+' expense'+(exps.length===1?'':'s')+' · '+f(tot)+' total':'Nothing logged yet';
+  if(!exps.length){el.innerHTML='<div class="empty"><span class="em">🧾</span>No expenses yet</div>';return;}
+  el.innerHTML=[...exps].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(e=>{
+    const idx=exps.indexOf(e),c=C[e.cat]||C.Other,d=new Date(e.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+    return`<div class="tr"><div class="ti" style="background:${c.col}20">${c.ic}</div><div style="flex:1;min-width:0"><div class="tn">${e.desc}</div><div class="tsub">${d} · ${e.cat}${e.freq!=='one'?' · '+e.freq:''}</div></div><div style="text-align:right"><div class="ta2">${f(e.amt)}</div><div class="db" onclick="delExp(${idx})">✕ delete</div></div></div>`;
+  }).join('');
+}
+
+function addExp(){
+  const desc=document.getElementById('a-d').value.trim(),raw=parseFloat(document.getElementById('a-a').value),cat=document.getElementById('a-c').value,freq=document.getElementById('a-f').value,date=document.getElementById('a-dt').value;
+  if(!desc||!raw||raw<=0||!date){toast('Please fill all fields');return;}
+  exps.push({desc,amt:freq==='weekly'?raw*4:raw,rawAmt:raw,cat,freq,date});
+  sv();render();
+  document.getElementById('a-d').value='';document.getElementById('a-a').value='';
+  toast('Expense added ✓');go('home',document.querySelector('#nav button'));
+}
+
+function delExp(i){if(confirm('Delete this expense?')){exps.splice(i,1);sv();render();toast('Deleted');}}
+
+function buildLim(){
+  document.getElementById('limform').innerHTML=Object.keys(C).map(k=>{
+    const c=C[k],v=cfg.lim[k]||'';
+    return`<div class="lr"><span class="li2">${c.ic}</span><span class="ln">${k}</span><input class="linp fi" type="number" id="lim_${k.replace(/\s+/g,'_')}" value="${v}" placeholder="no limit" inputmode="numeric"/></div>`;
+  }).join('');
+}
+
+function saveSet(){
+  cfg.inc=parseFloat(document.getElementById('s-i').value)||0;
+  cfg.goal=parseFloat(document.getElementById('s-g').value)||20;
+  Object.keys(C).forEach(k=>{const el=document.getElementById('lim_'+k.replace(/\s+/g,'_'));if(el&&el.value) cfg.lim[k]=parseFloat(el.value);else delete cfg.lim[k];});
+  sv();render();toast('Settings saved ✓');go('home',document.querySelector('#nav button'));
+}
+
+function clearAll(){if(confirm('Clear all data? Cannot be undone.')){exps=[];cfg={inc:0,goal:20,lim:{}};sv();location.reload();}}
+
+function go(name,btn){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('on'));
+  document.getElementById('scr-'+name).classList.add('on');
+  if(btn) btn.classList.add('on');
+  document.getElementById('screens').scrollTo(0,0);
+}
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+load();
+</script>
+</body>
+</html>
