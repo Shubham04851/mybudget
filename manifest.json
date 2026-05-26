@@ -1,0 +1,13 @@
+{
+  "name": "MyBudget",
+  "short_name": "MyBudget",
+  "description": "Personal finance tracker",
+  "start_url": "/mybudget/",
+  "display": "standalone",
+  "background_color": "#0f0f14",
+  "theme_color": "#0f0f14",
+  "icons": [
+    {"src": "https://fav.farm/💰", "sizes": "192x192", "type": "image/png"},
+    {"src": "https://fav.farm/💰", "sizes": "512x512", "type": "image/png"}
+  ]
+}
